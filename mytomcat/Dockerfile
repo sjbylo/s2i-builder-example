@@ -2,34 +2,18 @@
 # Ref. docs 
 # http://tecadmin.net/steps-to-install-tomcat-server-on-centos-rhel/#
 # http://tecadmin.net/steps-to-install-java-on-centos-5-6-or-rhel-5-6/
-# https://blog.openshift.com/create-s2i-builder-image/ 
-# Example: https://github.com/openshift-s2i/s2i-wildfly/blob/master/10.0/Dockerfile 
 
-FROM registry.access.redhat.com/rhel6.5
+FROM centos:7
 
 MAINTAINER sbylo@redhat.com
 
 ENV TOMCAT_VERSION=7.0.70
-
-# Set labels used in OpenShift to describe the builder image
-LABEL io.k8s.description="Platform for serving web content" \
-      io.k8s.display-name="Tomcat 7.0.70" \
-      io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,html,tomcat"
 
 # Install java
 RUN cd /opt && yum -y install tar wget && wget -O - -q --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.tar.gz" | tar xzf - && yum clean all -y
 
 # Install Tomcat
 Run cd /usr/local && curl -s http://www.us.apache.org/dist/tomcat/tomcat-7/v7.0.70/bin/apache-tomcat-7.0.70.tar.gz | tar xzf - && mv apache-tomcat-7.0.70 tomcat7
-
-# Copy the S2I scripts to /usr/libexec/s2i
-#COPY ./.s2i/bin/ /usr/libexec/s2i
-
-# Defines the location of the S2I
-LABEL io.openshift.s2i.scripts-url=image:///usr/local/s2i
-# Copy the S2I scripts from ./.s2i/bin/ to /usr/local/s2i when making the builder image
-COPY ./.s2i/bin/ /usr/local/s2i
 
 RUN useradd -d /home/tomcat -m -u 1001 -g 0 tomcat && cd /usr/local/tomcat7 && chown -R tomcat:0 . 
 
@@ -41,7 +25,5 @@ EXPOSE 8080
 
 USER 1001
 
-#ENTRYPOINT ./bin/startup.sh && sleep 9999999999
-# Set the default CMD to print the usage of the image, if somebody does docker run
-CMD ["usage"]
+ENTRYPOINT ./bin/startup.sh && sleep 9999999999
 
