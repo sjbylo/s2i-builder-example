@@ -1,5 +1,5 @@
-# Dockerfile for s2i builder image
-# Ref. docs 
+# Dockerfile example for java / tomcat
+# Ref. docs: 
 # http://tecadmin.net/steps-to-install-tomcat-server-on-centos-rhel/#
 # http://tecadmin.net/steps-to-install-java-on-centos-5-6-or-rhel-5-6/
 
